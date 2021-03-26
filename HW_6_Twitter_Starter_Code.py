@@ -1,6 +1,6 @@
 #########################################
-##### Name:                         #####
-##### Uniqname:                     #####
+##### Name: Taylor Marlin           #####
+##### Uniqname:    taylmarl         #####
 #########################################
 
 from requests_oauthlib import OAuth1
