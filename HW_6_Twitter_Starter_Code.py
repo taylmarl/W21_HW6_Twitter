@@ -97,7 +97,12 @@ def construct_unique_key(baseurl, params):
         the unique key as a string
     '''
     #TODO Implement function
-    pass
+    unique_key_str = baseurl
+    for item in params.items():
+        unique_key_str = unique_key_str + "_" + item[0] + "_" + item[1]
+
+    return unique_key_str
+
 
 
 def make_request(baseurl, params):
@@ -117,7 +122,9 @@ def make_request(baseurl, params):
         a dictionary
     '''
     #TODO Implement function
-    pass
+    response = requests.get(baseurl, params)
+    return response
+
 
 
 def make_request_with_cache(baseurl, hashtag, count):
@@ -199,3 +206,4 @@ if __name__ == "__main__":
     tweet_data = make_request_with_cache(baseurl, hashtag, count)
     most_common_cooccurring_hashtag = find_most_common_cooccurring_hashtag(tweet_data, hashtag)
     print("The most commonly cooccurring hashtag with {} is {}.".format(hashtag, most_common_cooccurring_hashtag))
+
