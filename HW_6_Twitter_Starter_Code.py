@@ -122,8 +122,12 @@ def make_request(baseurl, params):
         a dictionary
     '''
     #TODO Implement function
-    response = requests.get(baseurl, params)
-    return response
+    params = {key: value.lower() for key, value in params.items() if type(value) == str}
+    response = requests.get(url=baseurl,
+                            params=params,
+                            auth=oauth)
+    results = response.json()
+    return results
 
 
 
@@ -156,7 +160,16 @@ def make_request_with_cache(baseurl, hashtag, count):
         JSON
     '''
     #TODO Implement function
-    pass
+
+    params = {'q': hashtag, 'count': count}
+
+    query_url = f'https://api.twitter.com/1.1/search/tweets.json?q={hashtag.lower()}&count={count}'
+
+    if query_url in CACHE_DICT.keys():
+        return CACHE_DICT[query_url]
+    else:
+        return make_request(baseurl, params)
+
 
 
 def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
