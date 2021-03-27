@@ -97,12 +97,17 @@ def construct_unique_key(baseurl, params):
         the unique key as a string
     '''
     #TODO Implement function
-    unique_key_str = baseurl
-    for item in params.items():
-        unique_key_str = unique_key_str + "_" + item[0] + "_" + item[1]
 
-    return unique_key_str
+    param_strings = []
+    connector = '_'
 
+     # Using code we covered in lecture to format unique key
+    for k in params.keys():
+        param_strings.append(f'{k}_{params[k]}')
+    param_strings.sort()
+    unique_key = baseurl + connector +  connector.join(param_strings)
+
+    return unique_key
 
 
 def make_request(baseurl, params):
@@ -122,7 +127,11 @@ def make_request(baseurl, params):
         a dictionary
     '''
     #TODO Implement function
+
+    # Replace params dict with lowercase hashtags (or any other string params)
     params = {key: value.lower() for key, value in params.items() if type(value) == str}
+
+    # Make request using params & oauth
     response = requests.get(url=baseurl,
                             params=params,
                             auth=oauth)
@@ -130,10 +139,9 @@ def make_request(baseurl, params):
     return results
 
 
-
 def make_request_with_cache(baseurl, hashtag, count):
     '''Check the cache for a saved result for this baseurl+params:values
-    combo. If the result is found, return it. Otherwise send a new 
+    combo. If the result is found, return it. Otherwise send a new
     request, save it, then return it.
 
     AUTOGRADER NOTES: To test your use of caching in the autograder, please do the following:
@@ -141,9 +149,9 @@ def make_request_with_cache(baseurl, hashtag, count):
     If you request a new result using make_request(), print "making new request"
 
     Do no include the print statements in your return statement. Just print them as appropriate.
-    This, of course, does not ensure that you correctly retrieved that data from your cache, 
+    This, of course, does not ensure that you correctly retrieved that data from your cache,
     but it will help us to see if you are appropriately attempting to use the cache.
-    
+
     Parameters
     ----------
     baseurl: string
@@ -152,7 +160,7 @@ def make_request_with_cache(baseurl, hashtag, count):
         The hashtag to search for
     count: integer
         The number of results you request from Twitter
-    
+
     Returns
     -------
     dict
@@ -161,15 +169,24 @@ def make_request_with_cache(baseurl, hashtag, count):
     '''
     #TODO Implement function
 
-    params = {'q': hashtag, 'count': count}
+    # Saving parameters of hashtag and count into
+    # dictionary for get request, if necessary.
+    params = {'q': hashtag.lower(), 'count': count}
 
-    query_url = f'https://api.twitter.com/1.1/search/tweets.json?q={hashtag.lower()}&count={count}'
+    # Using our unique key function to save and search keys in our cache
+    query_url = construct_unique_key(baseurl, params)
 
+    # See if this query has already been done (and is saved in cache)
     if query_url in CACHE_DICT.keys():
+        print("fetching cached data")
         return CACHE_DICT[query_url]
-    else:
-        return make_request(baseurl, params)
 
+    # If query is not in cache, make new get request,
+    # save in cache & return data from cache
+    else:
+        CACHE_DICT[query_url] = make_request(baseurl, params)
+        save_cache(CACHE_DICT)
+        return CACHE_DICT[query_url]
 
 
 def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
@@ -181,17 +198,17 @@ def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
     tweet_data: dict
         Twitter data as a dictionary for a specific query
     hashtag_to_ignore: string
-        the same hashtag that is queried in make_request_with_cache() 
+        the same hashtag that is queried in make_request_with_cache()
         (e.g. "#MarchMadness2021")
 
     Returns
     -------
     string
-        the hashtag that most commonly co-occurs with the hashtag 
+        the hashtag that most commonly co-occurs with the hashtag
         queried in make_request_with_cache()
 
     '''
-    # TODO: Implement function 
+    # TODO: Implement function
     pass
     ''' Hint: In case you're confused about the hashtag_to_ignore 
     parameter, we want to ignore the hashtag we queried because it would 
