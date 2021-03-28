@@ -209,7 +209,54 @@ def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
 
     '''
     # TODO: Implement function
-    pass
+
+    # Isolate the hashtags from each returned tweet
+    # and save them into a list "hashes"
+    tweet_stats = tweet_data['statuses']
+    hashes = []
+
+    # Make sure to lowercase each hashtag, so we do not differentiate
+    # between hashtags with capitals vs lowercase
+    for tweet in tweet_stats:
+        for hashtag in tweet['entities']['hashtags']:
+            hashes.append(hashtag['text'].lower())
+
+    # Make sure we remove the hashtag that we searched, since
+    # That will be the most commonly occuring hashtag
+    # Also remove # symbol from the hashtag to ignore
+    if hashtag_to_ignore[0] == '#':
+        hashtag_to_ignore = hashtag_to_ignore[1:]
+
+    new_hashes = []
+    for hashtag in hashes:
+        if hashtag != hashtag_to_ignore.lower():
+            new_hashes.append(hashtag)
+
+    # Count the occurences of each hashtag and use dictionary to save tag and count
+    counting = {}
+    for hashtag in new_hashes:
+        if hashtag in counting.keys():
+            counting[hashtag] = counting[hashtag] + 1
+        else:
+            counting[hashtag] = 1
+
+    # Check which hashtags are the most occurring. In the event of a tie,
+    # This will choose the first commonly occuring word in the dict
+    max_occur = 0
+    freq_word = ''
+
+    for key, value in counting.items():
+        if value > max_occur:
+            max_occur = value
+            freq_word = key
+    if max_occur == 0:
+        return '#' + 'There is no hashtag that commonly occurs with this.'
+        
+    return '#' + freq_word
+
+
+
+
     ''' Hint: In case you're confused about the hashtag_to_ignore 
     parameter, we want to ignore the hashtag we queried because it would 
     definitely be the most occurring hashtag, and we're trying to find 
@@ -217,7 +264,7 @@ def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
     we're essentially looking for the second most commonly occurring 
     hashtags).'''
 
-    
+
 
 if __name__ == "__main__":
     if not client_key or not client_secret:
