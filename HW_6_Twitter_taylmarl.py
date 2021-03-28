@@ -215,11 +215,10 @@ def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
     tweet_stats = tweet_data['statuses']
     hashes = []
 
-    # Make sure to lowercase each hashtag, so we do not differentiate
-    # between hashtags with capitals vs lowercase
+    # Saving hashtags in a list for ease of access
     for tweet in tweet_stats:
         for hashtag in tweet['entities']['hashtags']:
-            hashes.append(hashtag['text'].lower())
+            hashes.append(hashtag['text'])
 
     # Make sure we remove the hashtag that we searched, since
     # That will be the most commonly occuring hashtag
@@ -229,7 +228,7 @@ def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
 
     new_hashes = []
     for hashtag in hashes:
-        if hashtag != hashtag_to_ignore.lower():
+        if hashtag.lower() != hashtag_to_ignore.lower():
             new_hashes.append(hashtag)
 
     # Count the occurences of each hashtag and use dictionary to save tag and count
