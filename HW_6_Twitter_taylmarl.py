@@ -129,7 +129,11 @@ def make_request(baseurl, params):
     #TODO Implement function
 
     # Replace params dict with lowercase hashtags (or any other string params)
-    params = {key: value.lower() for key, value in params.items() if type(value) == str}
+    for key, values in params.items():
+        if type(values) == str:
+            params[key] = values.lower()
+        
+
 
     # Make request using params & oauth
     response = requests.get(url=baseurl,
@@ -168,7 +172,7 @@ def make_request_with_cache(baseurl, hashtag, count):
         JSON
     '''
     #TODO Implement function
-
+    CACHE_DICT = open_cache()
     # Saving parameters of hashtag and count into
     # dictionary for get request, if necessary.
     params = {'q': hashtag.lower(), 'count': count}
@@ -178,12 +182,13 @@ def make_request_with_cache(baseurl, hashtag, count):
 
     # See if this query has already been done (and is saved in cache)
     if query_url in CACHE_DICT.keys():
-        print("fetching cached data")
+        print('fetching cached data')
         return CACHE_DICT[query_url]
 
     # If query is not in cache, make new get request,
     # save in cache & return data from cache
     else:
+        print('making new request')
         CACHE_DICT[query_url] = make_request(baseurl, params)
         save_cache(CACHE_DICT)
         return CACHE_DICT[query_url]
@@ -249,9 +254,9 @@ def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
             max_occur = value
             freq_word = key
     if max_occur == 0:
-        return '#' + 'There is no hashtag that commonly occurs with this.'
+        return
         
-    return '#' + freq_word
+    return freq_word.lower()
 
 
 
